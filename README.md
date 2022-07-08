@@ -41,6 +41,7 @@ This SDK version is compatible with the Stark Infra API v2.
     - [PixInfraction](#create-pixinfractions): Create Pix Infraction reports
     - [PixChargeback](#create-pixchargebacks): Create Pix Chargeback requests
     - [PixDomain](#query-pixdomains): View registered SPI participants certificates
+    - [StaticBrcode](#create-staticbrcodes): Create static Pix BR codes
   - [Credit Note](#credit-note)
     - [CreditNote](#create-creditnotes): Create credit notes
     - [CreditNotePreview](#preview-creditnotes): Preview credit notes
@@ -1639,6 +1640,67 @@ const starkinfra = require('starkinfra');
     for await (let certificate of pixDomains) {
         console.log(certificate);
     }
+})();
+```
+
+### Create StaticBrcodes
+
+StaticBrcodes store account information via a BR code or an image (QR code)
+that represents a PixKey and a few extra fixed parameters, such as an amount 
+and a reconciliation ID. They can easily be used to receive Pix transactions.
+
+```javascript
+const starkinfra = require('starkinfra');
+
+(async() => {
+    let brcodes = await starkinfra.staticBrcode.create([
+        {
+            name: 'Jamie Lannister',
+            keyId: '+5511988887777',
+            amount: 100,
+            reconciliationId: '123',
+            city: 'São Paulo'
+        }
+    ]);
+
+    for await (let brcode of brcodes) {
+        console.log(brcode);
+    }
+})();
+```
+
+### Query StaticBrcodes
+
+You can query multiple StaticBrcodes according to filters.
+
+```javascript
+const starkinfra = require('starkinfra');
+
+(async() => {
+    let brcodes = await starkinfra.staticBrcode.query({
+        limit: 1,
+        after: '2022-06-01',
+        before: '2022-06-30',
+        uuids: ['5ddde28043a245c2848b08cf315effa2']
+    });
+    
+    for await (let brcode of brcodes) {
+        console.log(brcode);
+    }
+})();
+```
+
+### Get a StaticBrcodes
+
+After its creation, information on a StaticBrcode may be retrieved by its UUID.
+
+```javascript
+const starkinfra = require('starkinfra');
+
+(async() => {
+    let brcode = await starkinfra.staticBrcode.get('5ddde28043a245c2848b08cf315effa2');
+    
+    console.log(brcode);
 })();
 ```
 
