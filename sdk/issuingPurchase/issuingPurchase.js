@@ -1,4 +1,5 @@
 const rest = require('../utils/rest.js');
+const parse = require('../utils/parse');
 const check = require('../utils/check.js');
 const Resource = require('../utils/resource.js').Resource
 
@@ -173,4 +174,56 @@ exports.page = async function ({ cursor, ids, cardIds, holderIds, endToEndIds, l
         before: before,
     };
     return rest.getPage(resource, query, user);
+};
+
+exports.parse = async function ({content, signature, user} = {}) {
+    /**
+     *
+     * Create single verified IssuingPurchase authorization request from a content string
+     *
+     * @description Use this method to parse and verify the authenticity of the authorization request received at the informed endpoint.
+     * Authorization requests are posted to your registered endpoint whenever IssuingPurchases are received.
+     * They present IssuingPurchase data that must be analyzed and answered with approval or declination.
+     * If the provided digital signature does not check out with the StarkInfra public key, a stark.exception.InvalidSignatureException will be raised.
+     * If the authorization request is not answered within 2 seconds or is not answered with an HTTP status code 200 the IssuingPurchase will go through the pre-configured stand-in validation.
+     *
+     * Parameters (required):
+     * @param content [string]: response content from request received at user endpoint (not parsed)
+     * @param signature [string]: base-64 digital signature received at response header 'Digital-Signature'
+     *
+     * Parameters (optional):
+     * @param user [Organization/Project object]: Organization or Project object. Not necessary if starkinfra.user was set before function call
+     *
+     * Return:
+     * @return Parsed IssuingPurchase object
+     *
+     */
+    return parse.parseAndVerify(resource, content, signature, user);
+};
+
+exports.response = async function (status, {amount, reason, tags} = {}) {
+    /**
+     *
+     * Helps you respond IssuingPurchase requests
+     *
+     * Parameters (required):
+     * @param status [string]: sub-issuer response to the authorization. ex: 'approved' or 'denied'
+     * 
+     * Parameters (conditionally required):
+     * @param reason [string]: denial reason. Options: 'other', 'blocked', 'lostCard', 'stolenCard', 'invalidPin', 'invalidCard', 'cardExpired', 'issuerError', 'concurrency', 'standInDenial', 'subIssuerError', 'invalidPurpose', 'invalidZipCode', 'invalidWalletId', 'inconsistentCard', 'settlementFailed', 'cardRuleMismatch', 'invalidExpiration', 'prepaidInstallment', 'holderRuleMismatch', 'insufficientBalance', 'tooManyTransactions', 'invalidSecurityCode', 'invalidPaymentMethod', 'confirmationDeadline', 'withdrawalAmountLimit', 'insufficientCardLimit', 'insufficientHolderLimit'
+     * 
+     * Parameters (optional):
+     * @param amount [integer, default null]: amount in cents that was authorized. ex: 1234 (= R$ 12.34)
+     * @param tags [list of strings, default null]: tags to filter retrieved objects. ex: ['tony', 'stark']
+     *
+     * Return:
+     * @return Dumped JSON string that must be returned to us on the IssuingPurchase request
+     *
+     */
+    return JSON.stringify({'authorization': {
+        'status': status,
+        'amount': amount ? amount : 0,
+        'reason': reason ? reason : '',
+        'tags': tags ? tags : [],
+    }});
 };

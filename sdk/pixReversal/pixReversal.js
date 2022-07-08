@@ -25,7 +25,6 @@ class PixReversal extends Resource {
      * Attributes (return-only):
      * @param id [string]: unique id returned when the PixReversal is created. ex: '5656565656565656'
      * @param returnId [string]: central bank's unique reversal transaction ID. ex: 'D20018183202202030109X3OoBHG74wo'.
-     * @param bankCode [string]: code of the bank institution in Brazil. ex: '20018183' or '341'
      * @param fee [integer]: fee charged when PixReversal is paid. ex: 200 (= R$ 2.00)
      * @param status [string]: current PixReversal status. ex: 'registered' or 'paid'
      * @param flow [string]: direction of money flow. ex: 'in' or 'out'
@@ -33,7 +32,7 @@ class PixReversal extends Resource {
      * @param updated [string]: latest update datetime for the PixReversal. ex: '2020-03-10 10:30:00.000'
      *
      */
-    constructor({ amount, externalId, endToEndId, reason, tags, id, returnId, bankCode, fee, status,
+    constructor({ amount, externalId, endToEndId, reason, tags, id, returnId, fee, status,
                     flow, created, updated}) {
         super(id);
         this.amount = amount;
@@ -43,7 +42,6 @@ class PixReversal extends Resource {
         this.tags = tags;
         this.id = id;
         this.returnId = returnId;
-        this.bankCode = bankCode;
         this.fee = fee;
         this.status = status;
         this.flow = flow;
