@@ -333,7 +333,7 @@ To take a look at the sub-issuer BINs available to you, just run the following:
 
 ```javascript
 await (async() => {
-    let bins = await starkinfra.issuingBin.query();
+    let bins = await starkinfra.issuingProduct.query();
 
     for await (let bin of bins) {
         console.log(bin);
