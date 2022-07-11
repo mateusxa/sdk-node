@@ -31,14 +31,21 @@ class IssuingPurchase extends Resource {
      * @param merchantName [string]: merchant name. ex: 'Google Cloud Platform'
      * @param merchantFee [integer]: fee charged by the merchant to cover specific costs, such as ATM withdrawal logistics, etc. ex: 200 (= R$ 2.00)
      * @param walletId [string]: virtual wallet ID. ex: '5656565656565656'
-     * @param methodCode [string]: method code. ex: 'chip', 'token', 'server', 'manual', 'magstripe' or 'contactless'
+     * @param methodCode [string]: method code. Options: 'chip', 'token', 'server', 'manual', 'magstripe' or 'contactless'
      * @param score [float]: internal score calculated for the authenticity of the purchase. ex: 7.6
+     * @param endToEndId [string]: Unique id used to identify the transaction through all of its life cycle, even before the purchase is denied or accepted and gets its usual id. ex: '679cd385-642b-49d0-96b7-89491e1249a5'
+     * @param tags [list of string]: list of strings for tagging. ex: ['travel', 'food']
+     * 
+     * Attributes (IssuingPurchase only):
      * @param issuingTransactionIds [string]: ledger transaction ids linked to this Purchase
-     * @param endToEndId [string]: Unique id used to identify the transaction through all of its life cycle, even before the purchase is denied or accepted and gets its usual id. Example: endToEndId='679cd385-642b-49d0-96b7-89491e1249a5'
      * @param status [string]: current IssuingCard status. ex: 'approved', 'canceled', 'denied', 'confirmed' or 'voided'
-     * @param tags [string]: list of strings for tagging. ex: ['travel', 'food']
      * @param created [string]: creation datetime for the IssuingPurchase. ex: '2020-03-10 10:30:00.000'
      * @param updated [string]: latest update datetime for the IssuingPurchase. ex: '2020-03-10 10:30:00.000'
+     * 
+     * Attributes (Authorization request only):
+     * @param isPartialAllowed [bool]: true if the the merchant allows partial purchases. ex: false
+     * @param cardTags [list of strings]: tags of the IssuingCard responsible for this purchase. ex: ["travel", "food"]
+     * @param holderTags [list of strings]: tags of the IssuingHolder responsible for this purchase. ex: ["technology", "john snow"]
      *
      */
     constructor({ id, holderName, cardId, cardEnding, amount, tax, issuerAmount, issuerCurrencyCode, 

@@ -188,3 +188,24 @@ exports.parse = async function ({content, signature, user} = {}) {
      */
     return parse.parseAndVerify(resource, content, signature, user);
 };
+
+exports.response = async function ({status, reason} = {}) {
+    /**
+     *
+     * Helps you respond to a PixReversal authorization
+     *
+     * Parameters (required):
+     * @param status [string]: response to the authorization. ex: 'approved' or 'denied'
+     *
+     * Parameters (conditionally required):
+     * @param reason [string, default null]: denial reason. Options: 'invalidAccountNumber', 'blockedAccount', 'accountClosed', 'invalidAccountType', 'invalidTransactionType', 'taxIdMismatch', 'invalidTaxId', 'orderRejected', 'reversalTimeExpired', 'settlementFailed'
+     *
+     * Return:
+     * @returns Dumped JSON string that must be returned to us
+     *
+     */
+    return JSON.stringify({
+        'status': status,
+        'reason': reason,
+    });
+};
