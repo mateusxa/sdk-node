@@ -153,10 +153,10 @@ exports.page = async function ({ cursor, limit, after, before, uuids, externalId
     return rest.getPage(resource, query, user);
 };
 
-exports.responseDue = async function (version, created, due, keyId, status, reconciliationId, amount, senderName, receiverName,
-    receiverStreetLine, receiverCity, receiverStateCode, receiverZipCode, expiration=null, 
-    senderTaxId=null, receiverTaxId=null, fineAmount=null, interestAmount=null, discountAmount=null, 
-    description=null) {
+exports.responseDue = async function ({ version, created, due, keyId, status, reconciliationId, amount, senderName, receiverName,
+    receiverStreetLine, receiverCity, receiverStateCode, receiverZipCode, expiration, 
+    senderTaxId, receiverTaxId, fineAmount, interestAmount, discountAmount, 
+    description } = {}) {
     /**
      *
      * Helps you respond to a due DynamicBrcode Read
@@ -219,8 +219,8 @@ exports.responseDue = async function (version, created, due, keyId, status, reco
     });
 };
 
-exports.responseInstant = async function (version, created, keyId, status, reconciliationId, amount, expiration=null, senderName=null, senderTaxId=null,
-    description=null, amountType=null, cashAmount=null, cashierType=null, cashierBankCode=null) {
+exports.responseInstant = async function ({ version, created, keyId, status, reconciliationId, amount, expiration, senderName, senderTaxId,
+    description, amountType, cashAmount, cashierType, cashierBankCode } = {}) {
     /**
      *
      * Helps you respond to an instant DynamicBrcode Read

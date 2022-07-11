@@ -42,6 +42,7 @@ This SDK version is compatible with the Stark Infra API v2.
     - [PixChargeback](#create-pixchargebacks): Create Pix Chargeback requests
     - [PixDomain](#query-pixdomains): View registered SPI participants certificates
     - [StaticBrcode](#create-staticbrcodes): Create static Pix BR codes
+    - [DynamicBrcode](#create-dynamicbrcodes): Create dynamic Pix BR codes
   - [Credit Note](#credit-note)
     - [CreditNote](#create-creditnotes): Create credit notes
     - [CreditNotePreview](#preview-creditnotes): Preview credit notes
@@ -1702,6 +1703,194 @@ const starkinfra = require('starkinfra');
     
     console.log(brcode);
 })();
+```
+
+### Create DynamicBrcodes
+
+BR codes store information represented by Pix QR Codes, which are used to send 
+or receive Pix transactions in a convenient way.
+DynamicBrcodes represent charges with information that can change at any time,
+since all data needed for the payment is requested dynamically to an URL stored
+in the BR Code. Stark Infra will receive the GET request and forward it to your
+registered endpoint with a GET request containing the UUID of the BR code for
+identification.
+
+```javascript
+const starkinfra = require('starkinfra')
+
+(async() => {
+    let brcodes = await starkinfra.dynamicBrcode.create([
+        {
+            name: "Jamie Lannister",
+            city: "Rio de Janeiro",
+            externalId: "my_unique_id_05",
+            type: "instant"
+        }
+    ]);
+
+    for await (let brcode of brcodes) {
+        console.log(brcode);
+    }
+})();
+```
+
+### Query DynamicBrcodes
+
+You can query multiple DynamicBrcodes according to filters.
+
+```javascript
+const starkinfra = require('starkinfra')
+
+(async() => {
+    let brcodes = await starkinfra.dynamicBrcode.query({
+        limit: 1,
+        after: '2022-07-01',
+        before: '2022-07-30',
+        uuids: ['47bfcd05713f4b3aa6a94a24f295de55']
+    });
+    
+    for await (let brcode of brcodes) {
+        console.log(brcode);
+    }
+})();
+```
+
+### Get a DynamicBrcode
+
+After its creation, information on a DynamicBrcode may be retrieved by its UUID.
+
+```javascript
+const starkinfra = require('starkinfra')
+
+(async() => {
+    let brcode = await starkinfra.dynamicBrcode.get('47bfcd05713f4b3aa6a94a24f295de55');
+    
+    console.log(brcode);
+})();
+```
+
+### Verify a DynamicBrcode read
+
+When a DynamicBrcode is read by your user, a GET request will be made to the your regitered URL to 
+retrieve additional information needed to complete the transaction.
+Use this method to verify the authenticity of a GET request received at your registered endpoint.
+If the provided digital signature does not check out with the StarkInfra public key, a stark.exception.InvalidSignatureException will be raised.
+
+```javascript
+const starkinfra = require('starkinfra');
+const express = require('express')
+const app = express()
+
+app.use(express.raw({type: '*/*'}));
+
+const port = 3000
+app.get('/', async (req, res) => {
+    let uuid = await starkinfra.dynamicBrcode.verify({
+        uuid: req.params.uuid,
+        signature: req.headers["Digital-Signature"],
+    });
+})
+app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
+```
+
+### Answer to a Due DynamicBrcode read
+
+When a Due DynamicBrcode is read by your user, a GET request containing 
+the BR code UUID will be made to your registered URL to retrieve additional 
+information needed to complete the transaction.
+
+The GET request must be answered in the following format within 5 seconds 
+and with an HTTP status code 200.
+
+```javascript
+const starkinfra = require('starkinfra');
+const express = require('express')
+const app = express()
+
+app.use(express.raw({type: '*/*'}));
+
+const port = 3000
+app.get('/', async (req, res) => {
+    try {
+        let uuid = await starkinfra.dynamicBrcode.verify({
+            uuid: req.params.uuid,
+            signature: req.headers["Digital-Signature"],
+        });
+
+        invoice = await get_my_invoice(uuid) // you should implement this method to get the information of the BR code from its uuid
+
+        res.send(
+            starkinfra.dynamicbrcode.responseDue({ // this optional method just helps you build the response JSON
+                version: invoice.version,
+                created: invoice.created,
+                due: invoice.due,
+                keyId: invoice.keyId,
+                status: invoice.status,
+                reconciliationId: invoice.reconciliationId,
+                amount: invoice.amount,
+                senderName: invoice.senderName,
+                receiverName: invoice.receiverName,
+                receiverStreetLine: invoice.receiverStreetLine,
+                receiverCity: invoice.receiverCity,
+                receiverStateCode: invoice.receiverStateCode,
+                receiverZipCode: invoice.receiverZipCode
+            })
+        );
+    }
+    catch (err) {
+        console.log(err)
+        res.status(400).end()
+    }
+})
+app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
+```
+
+### Answer to an Instant DynamicBrcode read
+
+When an Instant DynamicBrcode is read by your user, a GET request 
+containing the BR code UUID will be made to your registered URL to retrieve 
+additional information needed to complete the transaction.
+
+The get request must be answered in the following format 
+within 5 seconds and with an HTTP status code 200.
+
+```javascript
+const starkinfra = require('starkinfra');
+const express = require('express')
+const app = express()
+
+app.use(express.raw({type: '*/*'}));
+
+const port = 3000
+app.get('/', async (req, res) => {
+    try {
+        let uuid = await starkinfra.dynamicBrcode.verify({
+            uuid: req.params.uuid,
+            signature: req.headers["Digital-Signature"],
+        });
+
+        invoice = await get_my_invoice(uuid) // you should implement this method to get the information of the BR code from its uuid
+
+        res.send(
+            starkinfra.dynamicbrcode.responseInstant({ // this optional method just helps you build the response JSON
+                version: invoice.version,
+                created: invoice.created,
+                keyId: invoice.keyId,
+                status: invoice.status,
+                reconciliationId: invoice.reconciliationId,
+                amount: invoice.amount,
+                cashierType: invoice.cashierType,
+                cashierBankCode: invoice.cashierBankCode,
+                cashAmount: invoice.cashAmount
+            })
+        );
+    }
+    catch (err) {
+        console.log(err)
+        res.status(400).end()
+    }
+})
+app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
 ```
 
 ## Credit Note

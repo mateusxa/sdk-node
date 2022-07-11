@@ -48,7 +48,7 @@ const INVALID_SIGNATURE = 'MEUCIQDOpo1j+V40DNZK2URL2786UQK/8mDXon9ayEd8U0/l7AIgY
 describe('TestDynamicBrcodeParseRight', function() {
     this.timeout(10000);
     it('test_success', async () => {
-        let authorization = await starkinfra.dynamicBrcode.verify({uuid: UUID, signature: VALID_SIGNATURE})
+        let uuid = await starkinfra.dynamicBrcode.verify({uuid: UUID, signature: VALID_SIGNATURE})
     });
 });
 
@@ -58,7 +58,7 @@ describe('TestDynamicBrcodeParseWrong', function() {
     it('test_success', async () => {
         let error = false;
         try {
-            let authorization = await starkinfra.dynamicBrcode.verify({uuid: UUID, signature: INVALID_SIGNATURE})
+            let uuid = await starkinfra.dynamicBrcode.verify({uuid: UUID, signature: INVALID_SIGNATURE})
         } catch (e) {
             error = true;
         }
@@ -71,10 +71,50 @@ describe('TestDynamicBrcodeParseMalformed', function() {
     it('test_success', async () => {
         let error = false;
         try {
-            let authorization = await starkinfra.dynamicBrcode.verify({uuid: UUID, signature: 'something is definitely wrong'})
+            let uuid = await starkinfra.dynamicBrcode.verify({uuid: UUID, signature: 'something is definitely wrong'})
         } catch (e) {
             error = true;
         }
         assert(error);
+    });
+});
+
+describe('TestDynamicBrcodeResponseDue', function() {
+    this.timeout(10000);
+    it('test_success', async () => {
+        let response = await starkinfra.dynamicBrcode.responseDue({
+            version: 1,
+            created: "2022-03-10 10:30:00.000",
+            due: "2022-07-15",
+            expiration: 100000,
+            keyId: "+5511989898989",
+            status: "paid",
+            reconciliationId: "b77f52367ab944879f9566ee6eaf1781",
+            amount: 100,
+            senderName: "Anthony Edward Stark",
+            receiverName: "Jamie Lannister",
+            receiverStreetLine: "Av. Paulista, 200",
+            receiverCity: "Sao Paulo",
+            receiverStateCode: "SP",
+            receiverZipCode: "01234-567",
+        });
+        assert(typeof response == 'string');
+        console.log(response);
+    });
+});
+
+describe('TestDynamicBrcodeResponseInstant', function() {
+    this.timeout(10000);
+    it('test_success', async () => {
+        let response = await starkinfra.dynamicBrcode.responseInstant({
+            version: 1,
+            created: "2022-07-01",
+            keyId: "+5511989898989",
+            status: "paid",
+            reconciliationId: "b77f52367ab944879f9566ee6eaf1781",
+            amount: 100,
+        });
+        assert(typeof response == 'string');
+        console.log(response);
     });
 });
