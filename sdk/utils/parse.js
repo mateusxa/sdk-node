@@ -28,6 +28,12 @@ exports.parseAndVerify = async function (resource, content, signature, user = nu
         object = Object.assign(new resource['class'](), JSON.parse(content)['event']);
     }
 
+    content = await exports.verify(content, signature, user);
+    return object;
+}
+
+
+exports.verify = async function (content, signature, user = null) {
     try {
         signature = Ellipticcurve.Signature.fromBase64(signature);
     } catch (e) {
@@ -35,10 +41,10 @@ exports.parseAndVerify = async function (resource, content, signature, user = nu
     }
 
     if (await verifySignature(content, signature, user)) {
-        return object;
+        return content;
     }
     if (await verifySignature(content, signature, user, true)) {
-        return object;
+        return content;
     }
     throw new error.InvalidSignatureError('Provided signature and content do not match Stark public key');
 }
