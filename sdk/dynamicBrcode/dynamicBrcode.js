@@ -1,5 +1,6 @@
 const rest = require('../utils/rest.js');
 const check = require('../utils/check.js');
+const parse = require('../utils/parse.js');
 const Resource = require('../utils/resource.js').Resource
 
 
@@ -35,7 +36,7 @@ class DynamicBrcode extends Resource {
      * @param created [string]: creation datetime for the DynamicBrcode. ex: '2020-03-10 10:30:00.000'
      * 
      */
-    constructor({id, name, city, externalId, id=null, type=null, url=null, uuid=null, updated=null, created=null}) {
+    constructor({id, name, city, externalId, type=null, url=null, uuid=null, updated=null, created=null}) {
         super(id);
         this.name = name
         this.city = city
@@ -237,15 +238,19 @@ exports.responseInstant = async function (version, created, keyId, status, recon
      * @param amount [integer]: positive integer that represents the amount in cents of the resulting Pix transaction. ex: 1234 (= R$ 12.34)
      *
      * Parameters (conditionally required):
-     * @param cashierType [string, default null]: cashier's type. Required if the cashAmount is different from 0. Options: "merchant", "participant" and "other"
-     * @param cashierBankCode [string, default null]: cashier's bank code. Required if the cashAmount is different from 0. ex: "20018183"
+     * @param cashierType [string, default null]: cashier's type. Required if the cashAmount is different from 0. Options: 'merchant', 'participant' and 'other'
+     * @param cashierBankCode [string, default null]: cashier's bank code. Required if the cashAmount is different from 0. ex: '20018183'
      * 
      * Parameters (optional):
-     * @param amount [integer, default null]: amount in cents that was authorized. ex: 1234 (= R$ 12.34)
-     * @param tags [list of strings, default null]: tags to filter retrieved object. ex: ['tony', 'stark']
+     * @param cashAmount [integer, default 0]: amount to be withdrawn from the cashier in cents. ex: 1000 (= R$ 10.00)
+     * @param expiration [integer, default 86400 (1 day)]: time in seconds counted from the creation datetime until the DynamicBrcode expires. After expiration, the BR code cannot be paid anymore. Default value: 86400 (1 day)
+     * @param senderName [string, default null]: sender's full name. ex: 'Anthony Edward Stark'
+     * @param senderTaxId [string, default null]: sender's CPF (11 digits formatted or unformatted) or CNPJ (14 digits formatted or unformatted). ex: '01.001.001/0001-01'
+     * @param amountType [string, default 'fixed']: amount type of the Brcode. If the amount type is 'custom' the Brcode's amount can be changed by the sender at the moment of payment. Options: 'fixed' or 'custom'
+     * @param description [string, default null]: additional information to be shown to the sender at the moment of payment.
      *
      * Return:
-     * @return Dumped JSON string that must be returned to us on the IssuingPurchase request
+     * @return Dumped JSON string that must be returned to us
      *
      */
     return JSON.stringify({
@@ -269,23 +274,23 @@ exports.responseInstant = async function (version, created, keyId, status, recon
 exports.verify = async function ({uuid, signature, user} = {}) {
     /**
      *
-     * Create single verified IssuingPurchase authorization request from a content string
+     * Verify a DynamicBrcode Read 
      *
-     * @description Use this method to parse and verify the authenticity of the authorization request received at the informed endpoint.
-     * Authorization requests are posted to your registered endpoint whenever IssuingPurchases are received.
-     * They present IssuingPurchase data that must be analyzed and answered with approval or declination.
-     * If the provided digital signature does not check out with the StarkInfra public key, a stark.exception.InvalidSignatureException will be raised.
-     * If the authorization request is not answered within 2 seconds or is not answered with an HTTP status code 200 the IssuingPurchase will go through the pre-configured stand-in validation.
+     * @description When a DynamicBrcode is read by your user, a GET request will be made to your registered URL to
+     * retrieve additional information needed to complete the transaction.
+     * Use this method to verify the authenticity of a GET request received at your registered endpoint.
+     * If the provided digital signature does not check out with the StarkInfra public key,
+     * a stark.exception.InvalidSignatureException will be raised.
      * 
      * Parameters (required):
-     * @param content [string]: response content from request received at user endpoint (not parsed)
+     * @param uuid [string]: unique uuid returned when a DynamicBrcode is created. ex: '4e2eab725ddd495f9c98ffd97440702d'
      * @param signature [string]: base-64 digital signature received at response header 'Digital-Signature'
      *
      * Parameters (optional):
      * @param user [Organization/Project object]: Organization or Project object. Not necessary if starkinfra.user was set before function call
      *
      * Return:
-     * @return Parsed IssuingPurchase object
+     * @return Verified Brcode's uuid.
      *
      */
     return parse.verify(uuid, signature, user);
