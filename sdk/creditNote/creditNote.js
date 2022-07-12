@@ -1,12 +1,12 @@
 const rest = require('../utils/rest.js');
 const check = require('../utils/check.js');
 const parse = require('../utils/parse.js');
-const {Signer} = require('./signer.js');
 const {Invoice} = require('./invoice/invoice.js');
 const {Transfer} = require('./transfer.js');
+const { CreditSigner } = require('../creditSigner/creditSigner.js');
 const {parseObjects} = require('../utils/parse');
 const invoiceResource = require('./invoice/invoice.js').resource;
-const signerResource = require('./signer.js').subResource;
+const creditSignerResource = require('../creditSigner/creditSigner').resource;
 const transferResource = require('./transfer.js').resource;
 const Resource = require('../utils/resource.js').Resource
 
@@ -71,7 +71,7 @@ class CreditNote extends Resource {
         this.nominalAmount = nominalAmount;
         this.scheduled = scheduled;
         this.invoices = parseObjects(invoices, invoiceResource, Invoice);
-        this.signers = parseObjects(signers, signerResource, Signer);
+        this.signers = parseObjects(signers, creditSignerResource, CreditSigner);
         this.externalId = externalId;
         this.streetLine1 = streetLine1;
         this.streetLine2 = streetLine2;

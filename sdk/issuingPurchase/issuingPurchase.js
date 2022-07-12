@@ -51,7 +51,8 @@ class IssuingPurchase extends Resource {
     constructor({ id, holderName, cardId, cardEnding, amount, tax, issuerAmount, issuerCurrencyCode, 
                     issuerCurrencySymbol, merchantAmount, merchantCurrencyCode, merchantCurrencySymbol, 
                     merchantCategoryCode, merchantCountryCode, acquirerId, merchantId, merchantName, merchantFee,
-                    walletId, methodCode, score, issuingTransactionIds, endToEndId, status, tags, created, updated
+                    walletId, methodCode, score, issuingTransactionIds, endToEndId, status, tags, created, updated,
+                    isPartialAllowed, cardTags, holderTags
                 }) {
         super(id);
         this.holderName = holderName;
@@ -80,6 +81,9 @@ class IssuingPurchase extends Resource {
         this.tags = tags;
         this.created = check.datetime(created);
         this.updated = check.datetime(updated);
+        this.isPartialAllowed = isPartialAllowed;
+        this.cardTags = cardTags;
+        this.holderTags = holderTags;
     }
 }
 

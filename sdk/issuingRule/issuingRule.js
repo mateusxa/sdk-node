@@ -1,3 +1,10 @@
+const {parseObjects} = require('../utils/parse');
+const {CardMethod} = require('../cardMethod/cardMethod.js');
+const cardMethodResource = require('../cardMethod/cardMethod').resource;
+const {MerchantCountry} = require('../merchantCountry/merchantCountry.js');
+const merchantCountryResource = require('../merchantCountry/merchantCountry').resource;
+const {MerchantCategory} = require('../merchantCategory/merchantCategory.js');
+const merchantCategoryResource = require('../merchantCategory/merchantCategory').resource;
 const Resource = require('../utils/resource.js').Resource
 
 
@@ -35,9 +42,9 @@ class IssuingRule extends Resource {
         this.counterAmount = counterAmount;
         this.currencyName = currencyName;
         this.currencySymbol = currencySymbol;
-        this.categories = categories;
-        this.countries = countries;
-        this.methods = methods;
+        this.categories = parseObjects(categories, merchantCategoryResource, MerchantCategory);
+        this.countries = parseObjects(countries, merchantCountryResource, MerchantCountry);
+        this.methods = parseObjects(methods, cardMethodResource, CardMethod);
     }
 }
 

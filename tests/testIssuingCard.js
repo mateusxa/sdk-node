@@ -10,6 +10,7 @@ describe('TestIssuingCardQuery', function(){
     it('test_success', async () => {
         let cards = await starkinfra.issuingCard.query({'limit': 10});
         for await (let card of cards) {
+            console.log(card);
             assert(typeof card.id == 'string');
         }
     });
@@ -22,7 +23,7 @@ describe('TestIssuingCardPage', function(){
         let cursor = null;
         let page = null;
         for (let i = 0; i < 2; i++) {
-            [page, cursor] = await starkinfra.issuingCard.page({ 'limit': 5, 'cursor': cursor });
+            [page, cursor] = await starkinfra.issuingCard.page({ 'limit': 5, 'cursor': cursor});
             for (let entity of page) {
                 assert(!ids.includes(entity.id));
                 ids.push(entity.id);
@@ -37,8 +38,11 @@ describe('TestIssuingCardPage', function(){
 describe('TestIssuingCardGet', function(){
     this.timeout(10000);
     it('test_success', async () => {
-        let cards = await starkinfra.issuingCard.query({'limit': 1});
+        let cards = await starkinfra.issuingCard.query({'limit': 1, expand: ['rules']});
         for await (let card of cards) {
+            console.log(card);
+            console.log(card.rules.categories);
+            console.log(card.rules.countries);
             assert(typeof card.id == 'string');
             card = await starkinfra.issuingCard.get(card.id);
             assert(typeof card.id == 'string');
