@@ -34,7 +34,7 @@ class IssuingCard extends Resource {
      * @param id [string]: unique id returned when IssuingCard is created. ex: '5656565656565656'
      * @param holderId [string]: cardholder unique id. ex: '5656565656565656'
      * @param type [string]: card type. ex: 'virtual'
-     * @param status [string]: current IssuingCard status. ex: 'canceled' or 'active'
+     * @param status [string]: current IssuingCard status. Options: 'canceled' or 'active'
      * @param number [string]: [EXPANDABLE] masked card number. ex: '1234 5678 1234 5678'
      * @param securityCode [string]: [EXPANDABLE] masked card verification value (cvv). Expand to unmask the value. ex: '123'.
      * @param expiration [string]: [EXPANDABLE] masked card expiration datetime. ex: '2020-03-10 10:30:00.000'
@@ -43,27 +43,27 @@ class IssuingCard extends Resource {
      *
      */
     constructor({
-                    holderTaxId, holderName, holderExternalId, id, holderId, type, displayName, 
-                    status, rules, binId, streetLine1, streetLine2, district, city, stateCode, 
-                    zipCode, tags, created, updated, number, securityCode, expiration
+                    holderName, holderTaxId, holderExternalId, displayName=null, rules=null, binId=null, tags=null, 
+                    streetLine1=null, streetLine2=null, district=null, city=null, stateCode=null, zipCode=null, id=null, holderId=null, 
+                    type=null, status=null, number=null, securityCode=null, expiration=null, created=null, updated=null
                 }) {
         super(id);
-        this.holderTaxId = holderTaxId;
         this.holderName = holderName;
+        this.holderTaxId = holderTaxId;
         this.holderExternalId = holderExternalId;
-        this.holderId = holderId;
-        this.type = type;
         this.displayName = displayName;
-        this.status = status;
         this.rules = parseObjects(rules, ruleResource, IssuingRule);
         this.binId = binId;
+        this.tags = tags;
         this.streetLine1 = streetLine1;
         this.streetLine2 = streetLine2;
         this.district = district;
         this.city = city;
         this.stateCode = stateCode;
         this.zipCode = zipCode;
-        this.tags = tags;
+        this.holderId = holderId;
+        this.type = type;
+        this.status = status;
         this.number = number;
         this.securityCode = securityCode;
         this.expiration = check.datetime(expiration);

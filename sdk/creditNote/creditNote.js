@@ -4,9 +4,9 @@ const parse = require('../utils/parse.js');
 const {Invoice} = require('./invoice/invoice.js');
 const {Transfer} = require('./transfer.js');
 const { CreditSigner } = require('../creditSigner/creditSigner.js');
-const {parseObjects} = require('../utils/parse');
+const {parseObjects} = require('../utils/parse.js');
 const invoiceResource = require('./invoice/invoice.js').resource;
-const creditSignerResource = require('../creditSigner/creditSigner').resource;
+const creditSignerResource = require('../creditSigner/creditSigner.js').resource;
 const transferResource = require('./transfer.js').resource;
 const Resource = require('../utils/resource.js').Resource
 
@@ -21,15 +21,15 @@ class CreditNote extends Resource {
      * to the Stark Infra API and returns the list of created objects.
      *
      * Parameters (required):
-     * @param templateId [string]: ID of the contract template on which the credit note will be based. ex: templateId='0123456789101112'
-     * @param name [string]: credit receiver's full name. ex: name='Anthony Edward Stark'
-     * @param taxId [string]: credit receiver's tax ID (CPF or CNPJ). ex: taxId='20.018.183/0001-80'
-     * @param nominalAmount [integer]: amount in cents transferred to the credit receiver, before deductions. ex: nominalAmount=11234 (= R$ 112.34)
+     * @param templateId [string]: ID of the contract template on which the credit note will be based. ex: '0123456789101112'
+     * @param name [string]: credit receiver's full name. ex: 'Anthony Edward Stark'
+     * @param taxId [string]: credit receiver's tax ID (CPF or CNPJ). ex: '20.018.183/0001-80'
+     * @param nominalAmount [integer]: amount in cents transferred to the credit receiver, before deductions. ex: 11234 (= R$ 112.34)
      * @param scheduled [string]: date for the payment execution. ex: '2020-03-10'
      * @param invoices [list of CreditNote.Invoice objects or dictionaries]: list of Invoice objects to be created and sent to the credit receiver.
      * @param payment [CreditNote.Transfer object]: payment entity to be created and sent to the credit receiver. ex: payment=creditNote.Transfer()
-     * @param signers [list of CreditNote.Signer objects or dictionaries]: The Signer object contains the name and email of the signer and the method of delivery. ex: signers=[{'name': 'Tony Stark', 'contact': 'tony@starkindustries.com', 'method': 'link'}]
-     * @param externalId [string]: url safe string that must be unique among all your CreditNotes. ex: externalId='my-internal-id-123456'
+     * @param signers [list of CreditSigner objects]: The Signer object contains the name and email of the signer and the method of delivery. ex: [CreditSigner(), CreditSigner()]
+     * @param externalId [string]: url safe string that must be unique among all your CreditNotes. ex: 'my-internal-id-123456'
      * @param streetLine1 [string]: credit receiver main address. ex: "Av. Paulista, 200"
      * @param streetLine2 [string]: credit receiver address complement. ex: "Apto. 123"
      * @param district [string]: credit receiver address district / neighbourhood. ex: "Bela Vista"
@@ -41,15 +41,15 @@ class CreditNote extends Resource {
      * @param paymentType [string]: payment type, inferred from the payment parameter if it is not a dictionary. ex: 'transfer'
      *
      * Parameters (optional):
-     * @param rebateAmount [integer, default null]: credit analysis fee deducted from lent amount. ex: rebateAmount=11234 (= R$ 112.34)
-     * @param tags [list of strings, default null]: list of strings for reference when searching for CreditNotes. ex: tags=[\'employees\', \'monthly\']
-     * @param expiration [integer]: time interval in seconds between due date and expiration date. ex 123456789
+     * @param rebateAmount [integer, default null]: credit analysis fee deducted from lent amount. ex: 11234 (= R$ 112.34)
+     * @param tags [list of strings, default null]: list of strings for reference when searching for CreditNotes. ex: ['employees', 'monthly']
+     * @param expiration [integer, default 604800 (7 days)]: time interval in seconds between due date and expiration date. ex 123456789
      *
      * Attributes (return-only):
      * @param id [string]: unique id returned when the CreditNote is created. ex: '5656565656565656'
      * @param amount [integer]: CreditNote value in cents. ex: 1234 (= R$ 12.34)
      * @param documentId [string]: ID of the signed document to execute this CreditNote. ex: '4545454545454545'
-     * @param status [string]: current status of the CreditNote. ex: 'canceled', 'created', 'expired', 'failed', 'processing', 'signed', 'success'
+     * @param status [string]: current status of the CreditNote. Options: 'canceled', 'created', 'expired', 'failed', 'processing', 'signed', 'success'
      * @param transactionIds [list of strings]: ledger transaction ids linked to this CreditNote. ex: ['19827356981273']
      * @param workspaceId [string]: ID of the Workspace that generated this CreditNote. ex: '4545454545454545'
      * @param taxAmount [integer]: tax amount included in the CreditNote. ex: 100
@@ -60,9 +60,9 @@ class CreditNote extends Resource {
      */
     constructor({
                     templateId, name, taxId, nominalAmount, scheduled, invoices, payment, paymentType, signers,
-                    externalId, streetLine2, streetLine1, district, city, stateCode, zipCode, rebateAmount, tags,
-                    interest, expiration, amount, documentId, status, transactionIds, workspaceId, taxAmount, nominalInterest,
-                    created, updated, id
+                    externalId, streetLine2, streetLine1, district, city, stateCode, zipCode, rebateAmount=null, tags=null,
+                    expiration=null, amount=null, documentId=null, status=null, transactionIds=null, workspaceId=null, 
+                    taxAmount=null, nominalInterest=null, interest=null, created=null, updated=null, id=null
                 }) {
         super(id);
         this.templateId = templateId;
@@ -81,8 +81,8 @@ class CreditNote extends Resource {
         this.zipCode = zipCode;
         this.rebateAmount = rebateAmount;
         this.tags = tags;
-        this.amount = amount;
         this.expiration = expiration;
+        this.amount = amount;
         this.documentId = documentId;
         this.status = status;
         this.transactionIds = transactionIds;

@@ -17,7 +17,7 @@ class CreditSigner extends Resource {
      * @param id [string]: unique id returned when the CreditSigner is created. ex: '5656565656565656'
      *
      */
-    constructor({ id, name, contact, method }) {
+    constructor({ name, contact, method, id=null }) {
         super(id);
         this.id = id, 
         this.name = name, 

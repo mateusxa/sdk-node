@@ -15,10 +15,10 @@ class MerchantCountry extends SubResource {
      * Attributes (return-only):
      * @param name [string]: country's name. ex: 'Brazil'
      * @param number [string]: country's number. ex: '076'
-     * @param shortCode [string, default null]: category's shortCode. ex: 'pets', 'food'
+     * @param shortCode [string]: category's shortCode. ex: 'pets', 'food'
      *
      */
-    constructor({ code, name, number, shortCode }) {
+    constructor({ code, name=null, number=null, shortCode=null }) {
         super();
         this.code = code
         this.name = name

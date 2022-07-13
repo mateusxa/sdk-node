@@ -17,10 +17,9 @@ class CardMethod extends SubResource {
      * @param number [string]: method's number. ex: '81'
      *
      */
-    constructor({ code, type, name, number }) {
+    constructor({ code, name=null, number=null }) {
         super();
         this.code = code
-        this.type = type
         this.name = name
         this.number = number
     }

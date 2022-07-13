@@ -38,7 +38,7 @@ class IssuingPurchase extends Resource {
      * 
      * Attributes (IssuingPurchase only):
      * @param issuingTransactionIds [string]: ledger transaction ids linked to this Purchase
-     * @param status [string]: current IssuingCard status. ex: 'approved', 'canceled', 'denied', 'confirmed' or 'voided'
+     * @param status [string]: current IssuingCard status. Options: 'approved', 'canceled', 'denied', 'confirmed' or 'voided'
      * @param created [string]: creation datetime for the IssuingPurchase. ex: '2020-03-10 10:30:00.000'
      * @param updated [string]: latest update datetime for the IssuingPurchase. ex: '2020-03-10 10:30:00.000'
      * 
@@ -48,11 +48,11 @@ class IssuingPurchase extends Resource {
      * @param holderTags [list of strings]: tags of the IssuingHolder responsible for this purchase. ex: ["technology", "john snow"]
      *
      */
-    constructor({ id, holderName, cardId, cardEnding, amount, tax, issuerAmount, issuerCurrencyCode, 
-                    issuerCurrencySymbol, merchantAmount, merchantCurrencyCode, merchantCurrencySymbol, 
-                    merchantCategoryCode, merchantCountryCode, acquirerId, merchantId, merchantName, merchantFee,
-                    walletId, methodCode, score, issuingTransactionIds, endToEndId, status, tags, created, updated,
-                    isPartialAllowed, cardTags, holderTags
+    constructor({ id=null, holderName=null, cardId=null, cardEnding=null, amount=null, tax=null, issuerAmount=null, issuerCurrencyCode=null, 
+                    issuerCurrencySymbol=null, merchantAmount=null, merchantCurrencyCode=null, merchantCurrencySymbol=null, 
+                    merchantCategoryCode=null, merchantCountryCode=null, acquirerId=null, merchantId=null, merchantName=null, merchantFee=null,
+                    walletId=null, methodCode=null, score=null, endToEndId=null, tags=null, issuingTransactionIds=null, status=null, created=null, updated=null,
+                    isPartialAllowed=null, cardTags=null, holderTags=null
                 }) {
         super(id);
         this.holderName = holderName;
@@ -75,10 +75,10 @@ class IssuingPurchase extends Resource {
         this.walletId = walletId;
         this.methodCode = methodCode;
         this.score = score;
-        this.issuingTransactionIds = issuingTransactionIds;
         this.endToEndId = endToEndId;
-        this.status = status;
         this.tags = tags;
+        this.issuingTransactionIds = issuingTransactionIds;
+        this.status = status;
         this.created = check.datetime(created);
         this.updated = check.datetime(updated);
         this.isPartialAllowed = isPartialAllowed;

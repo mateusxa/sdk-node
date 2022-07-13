@@ -30,7 +30,7 @@ class StaticBrcode extends Resource {
      * @param created [string]: creation datetime for the StaticBrcode. ex: '2020-03-10 10:30:00.000'
      * 
      */
-    constructor({id, name, keyId, city, amount, reconciliationId=null, uuid=null, url=null, updated=null, created=null}) {
+    constructor({id, name, keyId, city, amount=null, reconciliationId=null, uuid=null, url=null, updated=null, created=null}) {
         super(id);
         this.name = name;
         this.keyId = keyId;

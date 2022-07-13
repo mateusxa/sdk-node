@@ -24,21 +24,21 @@ class IssuingHolder extends Resource {
      *
      * Attributes (return-only):
      * @param id [string]: unique id returned when IssuingHolder is created. ex: '5656565656565656'
-     * @param status [string]: current IssuingHolder status. ex: 'canceled' or 'active'
+     * @param status [string]: current IssuingHolder status. Options: 'canceled' or 'active'
      * @param created [string]: creation datetime for the IssuingHolder. ex: '2020-03-10 10:30:00.000'
      * @param updated [string]: latest update datetime for the IssuingHolder. ex: '2020-03-10 10:30:00.000'
      *
      */
     constructor({
-                    id, externalId, name, rules, status, tags, taxId, updated, created
+                name, taxId, externalId, rules=null, tags=null, id=null, status=null, updated=null, created=null
                 }) {
         super(id);
-        this.externalId = externalId;
         this.name = name;
-        this.rules = parseObjects(rules, ruleResource, IssuingRule);
-        this.status = status;
-        this.tags = tags;
         this.taxId = taxId;
+        this.externalId = externalId;
+        this.rules = parseObjects(rules, ruleResource, IssuingRule);
+        this.tags = tags;
+        this.status = status;
         this.created = check.datetime(created);
         this.updated = check.datetime(updated);
     }
